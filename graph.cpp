@@ -14,6 +14,8 @@ public:
         Vertex from;
         Vertex to;
         Distance distance;
+        bool operator==(const Edge& other) const {
+            return from == other.from && to == other.to && distance == other.distance;
     };
 
     bool has_vertex(const Vertex& v) const {
