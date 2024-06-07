@@ -61,7 +61,8 @@ public:
         if (!has_vertex(e.from) || !has_vertex(e.to))
             return false;
         auto& list = _edges[e.from];
-        auto it = std::remove(list.begin(), list.end(), e);
+        auto it = std::remove_if(list.begin(), list.end(),
+            [e](const Edge& edge) { return edge.from == e.from && edge.to == e.to; });
         if (it != list.end()) {
             list.erase(it, list.end());
             return true;
