@@ -6,7 +6,11 @@
 #include <queue>
 #include <functional>
 #include <iterator>
-
+#include <vector>
+#include <algorithm>
+#include <limits>
+#include <cmath>
+constexpr double epsilon = 1e-9;
 template<typename Vertex, typename Distance = double>
 class Graph {
 public:
@@ -14,20 +18,23 @@ public:
         Vertex from;
         Vertex to;
         Distance distance;
+
         bool operator==(const Edge& other) const {
-            return from == other.from && to == other.to && distance == other.distance;
+            return from == other.from && to == other.to && std::fabs(distance - other.distance) < epsilon;
         }
     };
 
     bool has_vertex(const Vertex& v) const {
         return _vertices.count(v) > 0;
     }
+
     void add_vertex(const Vertex& v) {
-        if (has_vertex(v)) 
+        if (has_vertex(v))
             throw std::invalid_argument("Vertex already exists in the graph");
         _vertices.insert(v);
         _edges.emplace(v, std::vector<Edge>{});
     }
+
     bool remove_vertex(const Vertex& v) {
         if (!has_vertex(v)) return false;
         _vertices.erase(v);
@@ -43,11 +50,12 @@ public:
     void add_edge(const Vertex& from, const Vertex& to, const Distance& d) {
         if (!has_vertex(from) || !has_vertex(to))
             throw std::out_of_range("Vertex doesn't exist in the graph");
-        if(d>0)
+        if (d > 0)
             _edges[from].push_back({ from, to, d });
         else
             throw std::out_of_range("Distance must be positive");
     }
+
     bool remove_edge(const Vertex& from, const Vertex& to) {
         if (!has_vertex(from) || !has_vertex(to))
             return false;
@@ -60,6 +68,7 @@ public:
         }
         return false;
     }
+
     bool remove_edge(const Edge& e) {
         if (!has_vertex(e.from) || !has_vertex(e.to))
             return false;
@@ -79,6 +88,7 @@ public:
         return std::find_if(edges.begin(), edges.end(),
             [to](const Edge& e) { return e.to == to; }) != edges.end();
     }
+
     bool has_edge(const Edge& e) {
         if (!has_vertex(e.from) || !has_vertex(e.to))
             return false;
@@ -89,6 +99,7 @@ public:
     size_t order() const {
         return _vertices.size();
     }
+
     size_t degree(const Vertex& v) const {
         if (!has_vertex(v))
             throw std::invalid_argument("Vertex doesn't exist in the graph");
@@ -144,6 +155,7 @@ public:
         std::reverse(path.begin(), path.end());
         return path;
     }
+
     void walk(const Vertex& start_vertex, std::function<void(const Vertex&)> action) {
         if (!has_vertex(start_vertex))
             return;
@@ -167,9 +179,11 @@ public:
             }
         }
     }
+
     std::unordered_set<Vertex> vertices() const {
-        return _vertices; 
+        return _vertices;
     }
+
 private:
     std::unordered_set<Vertex> _vertices;
     std::unordered_map<Vertex, std::vector<Edge>> _edges;
