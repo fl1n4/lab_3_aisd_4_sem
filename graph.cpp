@@ -16,6 +16,7 @@ public:
         Distance distance;
         bool operator==(const Edge& other) const {
             return from == other.from && to == other.to && distance == other.distance;
+        }
     };
 
     bool has_vertex(const Vertex& v) const {
@@ -63,14 +64,14 @@ public:
         if (!has_vertex(e.from) || !has_vertex(e.to))
             return false;
         auto& list = _edges[e.from];
-        auto it = std::remove_if(list.begin(), list.end(),
-            [e](const Edge& edge) { return edge.from == e.from && edge.to == e.to; });
+        auto it = std::remove(list.begin(), list.end(), e);
         if (it != list.end()) {
             list.erase(it, list.end());
             return true;
         }
         return false;
     }
+
     bool has_edge(const Vertex& from, const Vertex& to) const {
         if (!has_vertex(from) || !has_vertex(to))
             return false;
